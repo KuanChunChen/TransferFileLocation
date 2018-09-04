@@ -22,13 +22,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import static utility.castles.getfile.Define.d_FILE_NAME;
+import static utility.castles.getfile.Define.d_FILE_TEST_STR;
+
 
 public class MainActivity extends AppCompatActivity {
 
 
 
-    private final static String d_FILE_NAME="CTMSDebugLog";
-    private final static String d_DIR_PATH="/data/CTMS";
+    //private final static String d_FILE_NAME="CTMSDebugLog";
+    //private final static String d_DIR_PATH="/data/CTMS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
         Button btnGetSize =findViewById(R.id.btn3);
         Button btnDelFile =findViewById(R.id.btn4);
 
+        final GetfileMAin getfile = new GetfileMAin() ;
 
-
-        //writeFile(d_FILE_NAME,        );
+        getfile.writeFile(d_FILE_NAME,d_FILE_TEST_STR);
 
         //tVPath.setText(d_DIR_PATH+File.separator+d_FILE_NAME+".txt");
 
@@ -53,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         //ListAdapter mAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,strarrSplit);
         //mList.setAdapter(mAdapter);
 
-
+        /* **Start button** */
         btnStart.setOnClickListener(new Button.OnClickListener(){
 
             @Override
@@ -67,25 +70,26 @@ public class MainActivity extends AppCompatActivity {
                 TextView tVStatus = findViewById(R.id.test2);
                 tVStatus.setMovementMethod(ScrollingMovementMethod.getInstance());
 
-                strReadData=readFile(d_FILE_NAME);
+                strReadData=getfile.readFile(d_FILE_NAME);
                 //String[] strarrSplit = strReadData.split("\n");
                 if(strReadData!="FileNotFoundException"&&strReadData!="IOExecption"){
                     int fileSize = strReadData.length();
 
-                    tVPath.setText("StoreDataPosition : "+d_DIR_PATH+File.separator+d_FILE_NAME+".log");
+                    //tVPath.setText("StoreDataPosition : "+d_DIR_PATH+File.separator+d_FILE_NAME+".log");
+                    tVPath.setText(Environment.getExternalStorageDirectory().getAbsolutePath());
                     tVPath.setTextColor(Color.WHITE);
                     tVPath.setBackgroundColor(android.graphics.Color.RED);
 
-
                     //writeFile Start
-                    strWriteData = writeFile(d_FILE_NAME,strReadData);
+                    strWriteData =getfile.writeFile(d_FILE_NAME,strReadData);
                     if(strWriteData=="Suc!"){
                         tVStatus.setText(strReadData);
+                        tVStatus.setTextColor(Color.WHITE);
+                        tVStatus.setBackgroundColor(android.graphics.Color.BLUE);
                     }else{
                         //失敗下顯示錯誤情況
                         tVStatus.setText(strWriteData);
                     }
-
                 }else{
                     tVStatus.setText(strReadData);
                 }
@@ -96,33 +100,35 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        //exit button
+        /* **exit button** */
         btnEnd.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
                 System.exit(0);
             }
         });
-        //get size button
+        /* **get Size button** */
         btnGetSize.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
                 String strSize;
                 TextView tVSize =findViewById(R.id.test1);
-                strSize = getFileSize(d_FILE_NAME);
+                strSize = getfile.getFileSize(d_FILE_NAME);
                 tVSize.setText("file size:"+strSize);
                 tVSize.setTextColor(Color.WHITE);
                 tVSize.setBackgroundColor(android.graphics.Color.RED);
             }
         });
 
-
+        /* **DelFile button** */
         btnDelFile.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
                 Boolean boDel;
+
+
                 TextView tVSize =findViewById(R.id.test1);
-                boDel = delFile(d_FILE_NAME);
+                boDel = getfile.delFile(d_FILE_NAME);
                 tVSize.setText("Delete fail (boolean):"+boDel);
                 tVSize.setTextColor(Color.WHITE);
                 tVSize.setBackgroundColor(android.graphics.Color.RED);
@@ -135,143 +141,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public String writeFile(String fileName, String strWrite)
-    {
-
-        String strRespone ="";
-
-        if(!Environment.getExternalStorageState().equals(Environment.MEDIA_REMOVED) ) {
-            try {
 
 
 
-                String fullPath =  Environment.getExternalStorageDirectory().getAbsolutePath();
-                String savePath = fullPath + File.separator  + fileName + ".log";
-
-                File file = new File(savePath);
-
-                if (!file.exists()) {
-                    file.createNewFile();
-                }
-
-                FileWriter fw = new FileWriter(file.getAbsoluteFile());
-                BufferedWriter bw = new BufferedWriter(fw);
-                bw.write(strWrite);
-
-
-                bw.close();
-
-                strRespone ="Suc!";
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-
-                strRespone ="Fail!";
-            } catch (Exception e){
-                e.printStackTrace();
-                strRespone = e.toString();
-
-            }
-        }else{
-            strRespone ="NO SD CARD!";
-
-
-        }
-
-        return  strRespone;
-    }
-
-
-
-
-    public String readFile(String strfileName){
-
-        BufferedReader buffReader = null;
-        String strRespone ="";
-
-        try {
-            StringBuffer strBuffOutput = new StringBuffer();
-            String fullPath = d_DIR_PATH;
-            //String fullPath =Environment.getExternalStorageDirectory().getAbsolutePath();
-            String savePath = fullPath + File.separator +strfileName+".log";
-
-            buffReader = new BufferedReader(new FileReader(savePath));
-            String line = "";
-            while ((line = buffReader.readLine()) != null) {
-                strBuffOutput.append(line +"\n");
-
-
-                if(strBuffOutput.capacity()>102400)
-                {
-                    strRespone +=strBuffOutput.toString();
-                    strBuffOutput.setLength(0);
-                }
-            }
-            strRespone += strBuffOutput.toString();
-            buffReader.close();
-
-        } catch(FileNotFoundException e) {
-            e.printStackTrace();
-            strRespone ="FileNotFoundException";
-        } catch (IOException e) {
-            e.printStackTrace();
-            strRespone ="IOExecption";
-
-        }
-        return strRespone;
-    }
-
-    public String getFileSize(String strfileName){
-
-        BufferedReader buffReader = null;
-        String strRespone ="";
-
-        try {
-
-            String fullPath = d_DIR_PATH;
-            //String fullPath =Environment.getExternalStorageDirectory().getAbsolutePath();
-            String savePath = fullPath + File.separator +strfileName+".log";
-
-
-            File fr= new File(savePath);
-            long lSize=fr.length();
-            strRespone=Long.toString(lSize);
-        } catch (Exception e) {
-            e.printStackTrace();
-            strRespone ="Execption";
-
-        }
-        return strRespone;
-
-    }
-
-    public boolean delFile(String strfileName){
-
-        BufferedReader buffReader = null;
-        boolean boRespone =false;
-
-        try {
-
-            String fullPath = d_DIR_PATH;
-
-            String savePath = fullPath + File.separator +strfileName+".log";
-
-
-            File fr= new File(savePath);
-            if(fr.exists()){
-                boRespone=fr.delete();
-
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-
-        }
-        return boRespone;
-
-    }
 
 
 
