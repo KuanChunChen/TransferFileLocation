@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_getfile"
+        android:checked="true"
+        android:icon="@drawable/ic_audiotrack_black_24dp"
+        android:title="@string/getfile" />
+    <item
+        android:id="@+id/menu_debug"
+        android:icon="@drawable/ic_audiotrack_black_24dp"
+        android:title="@string/debug" />
+    <item
+        android:id="@+id/menu_setting"
+        android:icon="@drawable/ic_audiotrack_black_24dp"
+        android:title="@string/setting" />
+</menu>
