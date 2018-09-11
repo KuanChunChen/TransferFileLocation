@@ -46,9 +46,7 @@
 
     <ScrollView
         android:layout_width="361dp"
-        android:layout_height="446dp"
-        tools:layout_editor_absoluteX="-1dp"
-        tools:layout_editor_absoluteY="65dp"
+        android:layout_height="442dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
@@ -73,6 +71,11 @@
                 android:layout_height="match_parent"
                 tools:layout_editor_absoluteX="16dp"
                 tools:layout_editor_absoluteY="66dp" />
+
+            <ListView
+                android:id="@+id/listview1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </LinearLayout>
     </ScrollView>
 
